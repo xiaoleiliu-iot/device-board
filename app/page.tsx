@@ -1,13 +1,14 @@
+"use client";
+import { useState, useEffect } from "react";
 type Device = {
   id: string;
- 
-  
+
   temp: number | null;
   pressure: number | null;
   rpm: number | null;
 };
 
-const devices: Device[] = [
+const initialDevices: Device[] = [
   { id: "CNC-01",temp: 62, pressure: 1.2, rpm: 1200 },
   { id: "CNC-02", temp: 60, pressure: 1.2, rpm: 1200 },
   { id: "CNC-03",  temp: 70, pressure: 1.3, rpm: 1230 },
@@ -36,6 +37,19 @@ function getTone(temp: number | null): "ok" | "alarm" | "offline" | "unknown" {
   return "offline";
 }
 export default function Home() {
+  const [devices, setDevices] = useState<Device[]>(initialDevices);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDevices((prev) =>
+        prev.map((d) => {
+          if (d.temp === null) return d;
+          return { ...d, temp: Math.round(d.temp + Math.random() * 8 - 4) };
+        })
+      );
+    }, 2000);
+
+    return () => clearInterval(timer);
+  }, []);
   return (
     <main className="min-h-screen bg-slate-900 p-8">
       <h1 className="text-white text-2xl font-bold mb-6">
